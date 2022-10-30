@@ -3,6 +3,7 @@ from logging import exception
 import socket
 import sys
 import time
+from turtle import clear
 from xmlrpc import server
 
 def createDNSQuery(hostName):
@@ -32,7 +33,6 @@ def createDNSQuery(hostName):
     qName = ''
     for i in range(len(website)):
         qName += str(len(website[i]))
-        print(qName)
         for j in range(len(website[i])):
             qName += str(format(ord(website[i][j]), "x"))
     
@@ -46,30 +46,29 @@ def createDNSQuery(hostName):
 
     query = header + question
 
-    print('DNS Header = ' + header)
-    print('DNS Question = ' + question)
-    print('DNS Query = ' + query) 
+    # print('DNS Header = ' + header)
+    # print('DNS Question = ' + question)
+    # print('DNS Query = ' + query) 
 
 
 def sendQuery(query):
     query = 'AAAA01000001000000000000036564750000010001'
 
-    print(query)
     response = ""
     serverAddress = ("8.8.8.8", 53)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     count = 1
-    print("Going into Loop!!!!")
+    print("Contacting DNS query")
+    print("Sending DNS Query..")
     while count < 4: 
-        print("IN THE LOOOOOP")
         try:
-            print('Attempt - ' + str(count))
             sock.sendto(binascii.unhexlify(query), serverAddress)
             sock.settimeout(5)
             response, _ = sock.recvfrom(1024)
 
+
             if response != "":
-                print("Successfull")
+                print('DNS response recieved (attempt ' + str(count) + ' of 3)')
                 break
 
         
@@ -83,27 +82,73 @@ def sendQuery(query):
     if count >= 4:
         print("Unable to send Query.")
         sys.exit()
+
     
-    print('Query response retreived')
     return binascii.hexlify(response).decode("utf-8")
 
     
 
-def recieveAndProcessResponse(responseQuery):
-    print("In recieve and ResponseQuery")
+def recieveAndProcessResponse(responseQuery, query, hostName):
+    print("Processing DNS response..")
+    print(responseQuery)
+    print('--------------------------------------------')
+    
+    headerID = responseQuery[:4]
+
+    #everything else after in the header will be after index 4
+
+    headerQR = responseQuery[4:8]
+    headerOPCODE = responseQuery[4:8]
+    headerAA = responseQuery[4:8]
+    headerTC = responseQuery[4:8]
+    headerRD = responseQuery[4:8]
+    headerRA = responseQuery[4:8]
+    headerZ = responseQuery[4:8]
+    headerRCODE = responseQuery[4:8]
+    headerQDCOUNT = responseQuery[4:8]
+
+
+    
+
+
+
+    questionQNAME = 1
+    questionQTYPE =1
+    questionQCLASS =1
+
+
+
+    answerNAME = 1
+    answerTYPE = 1
+    answerRDATA =1
+
+
+    print('header.ID = ' + str(headerID))
+    print('header.QR = ' + str(headerQR))
+    print('header.OPCODE = ' + str(headerOPCODE))
+    print('....')
+    print('....')
+    print('question.QNAME = ' + str(questionQNAME))
+    print('question.QTYPE = ' + str(questionQTYPE))
+    print('question.QCLASS = '+ str(questionQCLASS))
+    print('....')
+    print('....')
+    print('answer.NAME ' + str(answerNAME))
+    print('answer.TYPE = '+ str(answerTYPE))
+    print('....')
+    print('....')
+    print('answer.RDATA = ' + str(answerRDATA))
+
 
 def main(hostName):
-
-    #print('-----HELLO, WELCOME TO DNS CLIENT-----')
-    #print('-------Please Enter a Host Name-------')
+    print("Hello welcome to my DNS Client project")
+    print('------------------------')
+    print('Preparing DNS query..')
     query = createDNSQuery(hostName)
-    #print('--------------------------------------')
-    #print('-------------Sending Query------------')
     responseQuery = sendQuery(query)
-   # print('------------Recieving Query-----------')
-    #recievedQuery = recieveAndProcessResponse(responseQuery)
+    recieveAndProcessResponse(responseQuery, query, hostName)
 
-    # print('END OF PROGRAM, THANK YOU!')
+    print('END OF PROGRAM, THANK YOU!')
 
 
 if __name__ == "__main__":
