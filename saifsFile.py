@@ -108,10 +108,6 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
     headerQDCOUNT = responseQuery[4:8]
 
 
-    
-
-
-
     questionQNAME = 1
     questionQTYPE =1
     questionQCLASS =1
@@ -126,6 +122,13 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
     print('header.ID = ' + str(headerID))
     print('header.QR = ' + str(headerQR))
     print('header.OPCODE = ' + str(headerOPCODE))
+    print('header.AA = ' + str(headerOPCODE))
+    print('header.TC = ' + str(headerTC))
+    print('header.RD = ' + str(headerRD))
+    print('header.RA = ' + str(headerRA))
+    print('header.Z = ' + str(headerZ))
+    print('header.RCODE = ' + str(headerRCODE))
+    print('header.QDCOUNT = ' + str(headerQDCOUNT))
     print('....')
     print('....')
     print('question.QNAME = ' + str(questionQNAME))
@@ -135,8 +138,6 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
     print('....')
     print('answer.NAME ' + str(answerNAME))
     print('answer.TYPE = '+ str(answerTYPE))
-    print('....')
-    print('....')
     print('answer.RDATA = ' + str(answerRDATA))
 
 
