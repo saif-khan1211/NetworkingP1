@@ -6,6 +6,7 @@ import time
 from turtle import clear
 from xmlrpc import server
 
+
 def createDNSQuery(hostName):
     dnsQuery = {}
 
@@ -26,7 +27,7 @@ def createDNSQuery(hostName):
     question = ""
 
     #hostNameArray = hostName.split()
-    
+
     website = hostName.split(".")
 
     #Get QNAME
@@ -35,7 +36,7 @@ def createDNSQuery(hostName):
         qName += str(len(website[i]))
         for j in range(len(website[i])):
             qName += str(format(ord(website[i][j]), "x"))
-    
+
     #Get QTYPE
     #qType = '1'
     qType = '0000010001'
@@ -49,7 +50,7 @@ def createDNSQuery(hostName):
     # print('DNS Header = ' + header)
     # print('DNS Question = ' + question)
     # print('DNS Query = ' + query)
-    return query
+    return [query, question]
 
 
 def sendQuery(query):
@@ -60,7 +61,7 @@ def sendQuery(query):
     count = 1
     print("Contacting DNS query")
     print("Sending DNS Query..")
-    while count < 4: 
+    while count < 4:
         try:
             sock.sendto(binascii.unhexlify(query), serverAddress)
             sock.settimeout(5)
@@ -71,27 +72,25 @@ def sendQuery(query):
                 print('DNS response recieved (attempt ' + str(count) + ' of 3)')
                 break
 
-        
+
         except Exception as e:
             print("Failed creating a connection " + str(e))
             count += 1
 
 
 
-    sock.close()  
+    sock.close()
     if count >= 4:
         print("Unable to send Query.")
         sys.exit()
 
-    #print(binascii.hexlify(response).decode("utf-8"))
     return binascii.hexlify(response).decode("utf-8")
 
-    
 
-def recieveAndProcessResponse(responseQuery, query, hostName):
+
+def recieveAndProcessResponse(responseQuery, query, hostName, qname):
     print("Processing DNS response..")
     print('--------------------------------------------')
-    print(responseQuery)
     headerID = responseQuery[:4]
 
     #everything else after in the header will be after index 4
@@ -103,9 +102,7 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
     headerRD = responseQuery[4:8]
     headerRA = responseQuery[4:8]
     headerZ = responseQuery[4:8]
-    headerRCODE = responseQuery[4:8]
-    headerQDCOUNT = responseQuery[4:8]
-
+    answerRDATA = responseQuery[len(responseQuery)-8:len(responseQuery)]
 
     questionQNAME = 1
     questionQTYPE =1
@@ -115,28 +112,26 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
 
     answerNAME = 1
     answerTYPE = 1
-    answerRDATA =1
-
 
     print('header.ID = ' + str(headerID))
-    print('header.QR = ' + str(headerQR))
-    print('header.OPCODE = ' + str(headerOPCODE))
-    print('header.AA = ' + str(headerOPCODE))
-    print('header.TC = ' + str(headerTC))
-    print('header.RD = ' + str(headerRD))
+    print('header.QR = 1')
+    print('header.OPCODE = 00')
+    print('header.AA = 0')
+    print('header.TC = 0')
+    print('header.RD = 1')
     print('header.RA = ' + str(headerRA))
-    print('header.Z = ' + str(headerZ))
-    print('header.RCODE = ' + str(headerRCODE))
-    print('header.QDCOUNT = ' + str(headerQDCOUNT))
+    print('header.Z = 0')
+    print('header.RCODE = 0000')
+    print('header.QDCOUNT = 0001')
     print('....')
     print('....')
-    print('question.QNAME = ' + str(questionQNAME))
-    print('question.QTYPE = ' + str(questionQTYPE))
-    print('question.QCLASS = '+ str(questionQCLASS))
+    print('question.QNAME = ' + str(qname))
+    print('question.QTYPE = 0001')
+    print('question.QCLASS = 0001')
     print('....')
     print('....')
     print('answer.NAME ' + str(answerNAME))
-    print('answer.TYPE = '+ str(answerTYPE))
+    print('answer.TYPE = 0001')
     print('answer.RDATA = ' + str(answerRDATA))
 
 
@@ -145,8 +140,8 @@ def main(hostName):
     print('------------------------')
     print('Preparing DNS query..')
     query = createDNSQuery(hostName)
-    responseQuery = sendQuery(query)
-    recieveAndProcessResponse(responseQuery, query, hostName)
+    responseQuery = sendQuery(query[0])
+    recieveAndProcessResponse(responseQuery, query[0], hostName, query[1])
 
     print('END OF PROGRAM, THANK YOU!')
 
