@@ -49,10 +49,10 @@ def createDNSQuery(hostName):
     # print('DNS Header = ' + header)
     # print('DNS Question = ' + question)
     # print('DNS Query = ' + query) 
+    return query
 
 
 def sendQuery(query):
-    query = 'AAAA01000001000000000000036564750000010001'
 
     response = ""
     serverAddress = ("8.8.8.8", 53)
@@ -90,7 +90,6 @@ def sendQuery(query):
 
 def recieveAndProcessResponse(responseQuery, query, hostName):
     print("Processing DNS response..")
-    print(responseQuery)
     print('--------------------------------------------')
     
     headerID = responseQuery[:4]
@@ -142,7 +141,7 @@ def recieveAndProcessResponse(responseQuery, query, hostName):
 
 
 def main(hostName):
-    print("Hello welcome to my DNS Client project")
+    print("Hello welcome to Saif's and Rohit's DNS Client project")
     print('------------------------')
     print('Preparing DNS query..')
     query = createDNSQuery(hostName)
