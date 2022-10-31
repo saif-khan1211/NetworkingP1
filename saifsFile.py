@@ -32,17 +32,18 @@ def createDNSQuery(hostName):
     #Get QNAME
     qName = ''
     for i in range(len(website)):
-        qName += str(len(website[i]))
+        if len(website[i]) < 10:
+            qName += "0"  + str(format(len(website[i]) , "X"))
+        else:
+            qName += str(format(len(website[i]) , "X"))
         for j in range(len(website[i])):
             qName += str(format(ord(website[i][j]), "x"))
     
-    #Get QTYPE
-    #qType = '1'
+    #Qtype
     qType = '0000010001'
 
 
-    #question = qName + qType
-    question = qName
+    question = qName + qType
 
     query = header + question
 
