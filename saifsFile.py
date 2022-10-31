@@ -152,8 +152,16 @@ def main(hostName):
 
 
 if __name__ == "__main__":
-    #hostName = sys.argv[1]
-    #  my−dns−client gmu.edu
-    #hostName = input('Enter hostName ')
-    hostName = "my−dns−client gmu.edu"
-    main(hostName)
+    
+    # hostName = "my−dns−client gmu.edu"
+    # main(hostName)
+
+    if len(sys.argv) == 1:
+        print("Insufficient number of arguments")
+        exit()
+    elif len(sys.argv) > 2:
+        print("Too many arguments")
+        exit()
+    else:
+        hostName = sys.argv[1]
+        main(hostName)
