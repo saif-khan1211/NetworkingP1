@@ -25,9 +25,9 @@ def createDNSQuery(hostName):
 
     question = ""
 
-    hostNameArray = hostName.split()
+    #hostNameArray = hostName.split()
     
-    website = hostNameArray[1].split('.')
+    website = hostName.split(".")
 
     #Get QNAME
     qName = ''
@@ -48,7 +48,7 @@ def createDNSQuery(hostName):
 
     # print('DNS Header = ' + header)
     # print('DNS Question = ' + question)
-    # print('DNS Query = ' + query) 
+    # print('DNS Query = ' + query)
     return query
 
 
@@ -83,7 +83,7 @@ def sendQuery(query):
         print("Unable to send Query.")
         sys.exit()
 
-    
+    #print(binascii.hexlify(response).decode("utf-8"))
     return binascii.hexlify(response).decode("utf-8")
 
     
@@ -91,7 +91,7 @@ def sendQuery(query):
 def recieveAndProcessResponse(responseQuery, query, hostName):
     print("Processing DNS response..")
     print('--------------------------------------------')
-    
+    print(responseQuery)
     headerID = responseQuery[:4]
 
     #everything else after in the header will be after index 4
@@ -152,10 +152,8 @@ def main(hostName):
 
 
 if __name__ == "__main__":
-    
     # hostName = "my−dns−client gmu.edu"
     # main(hostName)
-
     if len(sys.argv) == 1:
         print("Insufficient number of arguments")
         exit()
